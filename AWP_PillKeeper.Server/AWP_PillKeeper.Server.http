@@ -1,0 +1,6 @@
+@AWP_PillKeeper.Server_HostAddress = http://localhost:5231
+
+GET {{AWP_PillKeeper.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
