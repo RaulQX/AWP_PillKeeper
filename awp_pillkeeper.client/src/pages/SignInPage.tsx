@@ -1,12 +1,20 @@
 import { Box, Typography } from "@mui/material";
 import logo from "/logo.jpg";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { Navigate } from "react-router-dom";
 import { useState } from "react";
+import { useUser } from "../contexts/UserContext";
+
+interface GoogleJwtPayload extends JwtPayload {
+  name: string;
+  email: string;
+  picture: string;
+}
 
 const SignInPage = () => {
   const [redirect, setRedirect] = useState(false);
+  const { setUser } = useUser();
   if (redirect) {
     return <Navigate to="/dashboard" />;
   }
@@ -34,8 +42,14 @@ const SignInPage = () => {
       <GoogleLogin
         onSuccess={(credentialResponse) => {
           if (credentialResponse.credential) {
-            const credentialsDecoded = jwtDecode(credentialResponse.credential);
-            console.log(credentialsDecoded);
+            const credentialsDecoded = jwtDecode<GoogleJwtPayload>(
+              credentialResponse.credential
+            );
+            setUser({
+              name: credentialsDecoded.name,
+              email: credentialsDecoded.email,
+              image: credentialsDecoded.picture,
+            });
             setRedirect(true);
           }
         }}

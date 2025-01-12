@@ -1,5 +1,5 @@
-import Menu from "../components/dashboard/Menu";
 import Calendar from "../components/dashboard/Calendar";
+import Menu from "../components/dashboard/Menu";
 import Sidebar from "../components/dashboard/Sidebar";
 
 const DashboardPage = () => {

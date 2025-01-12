@@ -8,7 +8,6 @@ export type ProcessedEvent = {
   start: Date;
   end: Date;
   disabled?: boolean;
-  recurring: RRule;
   color?: string;
   textColor?: string;
   editable?: boolean;
