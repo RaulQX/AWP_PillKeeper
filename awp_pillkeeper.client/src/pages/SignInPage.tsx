@@ -1,23 +1,19 @@
 import { Box, Typography } from "@mui/material";
 import logo from "/logo.jpg";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode, JwtPayload } from "jwt-decode";
 import { Navigate } from "react-router-dom";
-import { useState } from "react";
 import { useUser } from "../contexts/UserContext";
-
-interface GoogleJwtPayload extends JwtPayload {
-  name: string;
-  email: string;
-  picture: string;
-}
+import { useGoogleAuth } from "../hooks/useGoogleAuth";
 
 const SignInPage = () => {
-  const [redirect, setRedirect] = useState(false);
-  const { setUser } = useUser();
-  if (redirect) {
+  const { user } = useUser();
+  const googleAuth = useGoogleAuth();
+
+  if (user) {
+    console.log("User exists, redirecting to dashboard");
     return <Navigate to="/dashboard" />;
   }
+
   return (
     <Box
       sx={{
@@ -39,22 +35,18 @@ const SignInPage = () => {
       <Typography variant="h3" gutterBottom sx={{ fontSize: "2.5rem" }}>
         Welcome to PillKeeper
       </Typography>
+      {googleAuth.isError && (
+        <Typography color="error">
+          Error: {googleAuth.error?.message}
+        </Typography>
+      )}
       <GoogleLogin
         onSuccess={(credentialResponse) => {
-          if (credentialResponse.credential) {
-            const credentialsDecoded = jwtDecode<GoogleJwtPayload>(
-              credentialResponse.credential
-            );
-            setUser({
-              name: credentialsDecoded.name,
-              email: credentialsDecoded.email,
-              image: credentialsDecoded.picture,
-            });
-            setRedirect(true);
-          }
+          console.log("Google login success");
+          googleAuth.mutate(credentialResponse);
         }}
         onError={() => {
-          console.log("Error login");
+          console.error("Google login failed");
         }}
       />
     </Box>

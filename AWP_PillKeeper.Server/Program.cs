@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -27,10 +29,27 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173", // React app
+                             "https://localhost:5173")  // React app with HTTPS
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
-app.UseDefaultFiles();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -39,9 +58,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseAuthorization(); 
 
 app.MapControllers();
 

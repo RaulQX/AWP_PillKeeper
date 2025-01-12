@@ -16,14 +16,14 @@ namespace AWP_PillKeeper.Server.Controllers
         }
 
         [HttpGet("email/{email}")]
-        public async Task<ActionResult<User>> GetByEmail(string email)
+        public async Task<ActionResult<User>> GetByEmail([FromRoute] string email)
         {
             var user = await _userService.GetByEmailAsync(email);
             if (user == null)
             {
                 return NotFound();
             }
-            return user;
+            return Ok(user);
         }
 
         [HttpGet("{id}")]
@@ -41,10 +41,7 @@ namespace AWP_PillKeeper.Server.Controllers
         public async Task<ActionResult<User>> Create(User user)
         {
             var created = await _userService.CreateAsync(user);
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = created.Id },
-                created);
+            return CreatedAtAction(nameof(GetByEmail), new { email = created.Email }, created);
         }
 
         [HttpPut("{id}")]
