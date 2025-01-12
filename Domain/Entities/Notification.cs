@@ -6,41 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Enums;
-
+using AWP_PillKeeper.Domain.Entities;
 namespace Domain.Entities
 {
     public class Notification
     {
-        [Key]
-        public Guid NotificationId { get; set; } = Guid.NewGuid();
-
-        [Required]
-        public Guid UserId { get; set; }
-
-        [Required]
-        public Guid ReminderId { get; set; }
-
-        [Required]
-        public NotificationMethod NotificationType { get; set; } 
-
-        [Required]
-        public DateTime SentTime { get; set; } = DateTime.UtcNow;
-
-        [Required]
-        public NotificationStatus Status { get; set; } 
-
-        [StringLength(1000)]
-        public string Message { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation properties
-        [ForeignKey("UserId")]
-        public User User { get; set; }
-
-        [ForeignKey("ReminderId")]
-        public Reminder Reminder { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string? Subtitle { get; set; }
+        public DateTime Date { get; set; }
+        
+        public virtual User User { get; set; } = null!;
     }
 }
