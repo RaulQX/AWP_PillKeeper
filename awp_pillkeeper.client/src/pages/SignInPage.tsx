@@ -1,8 +1,15 @@
-import { Box, Button, Typography } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
+import { Box, Typography } from "@mui/material";
 import logo from "/logo.jpg";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { Navigate } from "react-router-dom";
+import { useState } from "react";
 
 const SignInPage = () => {
+  const [redirect, setRedirect] = useState(false);
+  if (redirect) {
+    return <Navigate to="/dashboard" />;
+  }
   return (
     <Box
       sx={{
@@ -24,22 +31,18 @@ const SignInPage = () => {
       <Typography variant="h3" gutterBottom sx={{ fontSize: "2.5rem" }}>
         Welcome to PillKeeper
       </Typography>
-      <Button
-        variant="contained"
-        startIcon={<GoogleIcon sx={{ fontSize: 24 }} />}
-        size="large"
-        sx={{
-          backgroundColor: "#805aab",
-          "&:hover": {
-            backgroundColor: "#c2a3d0",
-          },
-          fontSize: "1.2rem",
-          padding: "12px 24px",
-          borderRadius: "8px",
+      <GoogleLogin
+        onSuccess={(credentialResponse) => {
+          if (credentialResponse.credential) {
+            const credentialsDecoded = jwtDecode(credentialResponse.credential);
+            console.log(credentialsDecoded);
+            setRedirect(true);
+          }
         }}
-      >
-        Sign in with Google
-      </Button>
+        onError={() => {
+          console.log("Error login");
+        }}
+      />
     </Box>
   );
 };

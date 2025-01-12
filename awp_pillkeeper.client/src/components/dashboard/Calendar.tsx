@@ -42,6 +42,7 @@ const Calendar = () => {
       start.setHours(hours, minutes, 0);
       start.setSeconds(0);
       start.setMilliseconds(0);
+      console.log(start);
 
       const end = new Date(start);
       end.setMinutes(end.getMinutes() + 30);
@@ -54,7 +55,7 @@ const Calendar = () => {
         recurring: new RRule({
           freq: RRule.DAILY,
           interval: 1,
-          dtstart: new Date(start.getTime()),
+          dtstart: new Date(),
           count: 30,
         }),
         color: med.taken ? "#A5D6A7" : "#90CAF9",
@@ -86,7 +87,7 @@ const Calendar = () => {
         recurring: new RRule({
           freq: RRule.DAILY,
           interval: 1,
-          dtstart: new Date(start.getTime()),
+          dtstart: new Date(2025, 1, 11, 17, 0, 0, 0),
           count: 30,
         }),
         color: "#90CAF9",
@@ -111,13 +112,15 @@ const Calendar = () => {
     return Math.max(earliestHour - 1, 0); // Show 1 hour before earliest event, but not before midnight
   };
 
+  console.log(events);
+
   return (
     <div
       style={{
         width: window.innerWidth < 768 ? "100%" : "80%",
         paddingRight: window.innerWidth < 768 ? 0 : "16px",
         marginBottom: window.innerWidth < 768 ? "16px" : 0,
-        height: window.innerWidth < 768 ? "100%" : "calc(100vh - 128px)",
+        height: window.innerWidth < 768 ? "100%" : "calc(95vh - 128px)",
         overflow: "scroll",
       }}
     >
@@ -127,6 +130,7 @@ const Calendar = () => {
         editable={true}
         draggable={true}
         onEventEdit={(event: any) => {
+          console.log(events);
           useEventStore.getState().updateEvent(event);
         }}
         week={{
@@ -141,7 +145,6 @@ const Calendar = () => {
           endHour: 23,
           step: 60,
         }}
-        navigation={true}
       />
     </div>
   );

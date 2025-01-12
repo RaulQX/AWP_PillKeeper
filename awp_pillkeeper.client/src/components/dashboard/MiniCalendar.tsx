@@ -4,7 +4,6 @@ import { Scheduler } from "@aldabil/react-scheduler";
 
 const MiniCalendar = () => {
   const events = useEventStore((state) => state.events);
-  console.log(events);
   return (
     <Box sx={{ flex: "1 1 auto" }}>
       <Typography
