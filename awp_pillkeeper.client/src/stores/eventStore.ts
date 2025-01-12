@@ -16,7 +16,7 @@ export type ProcessedEvent = {
   draggable?: boolean;
   allDay?: boolean;
   agendaAvatar?: React.ReactElement | string;
-  sx?: any; 
+  sx?: any;
 };
 
 interface EventStore {
