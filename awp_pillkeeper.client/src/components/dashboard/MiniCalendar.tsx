@@ -5,10 +5,10 @@ import { Scheduler } from "@aldabil/react-scheduler";
 const MiniCalendar = () => {
   const events = useEventStore((state) => state.events);
   return (
-    <Box sx={{ flex: "1 1 auto" }}>
+    <Box sx={{ flex: "1 1 auto", paddingLeft: "16px" }}>
       <Typography
-        variant="h6"
-        sx={{ fontSize: "0.9rem", fontWeight: "bold" }}
+        variant="h4"
+        sx={{ fontSize: "1.5rem", fontWeight: "bold" }}
         gutterBottom
         textAlign={"right"}
       >

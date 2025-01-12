@@ -2,11 +2,9 @@ import { useEffect } from "react";
 import { Scheduler } from "@aldabil/react-scheduler";
 import { useEventStore } from "../../stores/eventStore";
 import { DayHours } from "@aldabil/react-scheduler/types";
-import { RRule } from "rrule";
 
 const Calendar = () => {
   const events = useEventStore((state) => state.events);
-  console.log(events);
   const todaysMeds = [
     { name: "Paracetamol", time: new Date().setHours(8, 0), taken: false },
     { name: "Vitamin D", time: new Date().setHours(9, 0), taken: true },
@@ -42,7 +40,6 @@ const Calendar = () => {
       start.setHours(hours, minutes, 0);
       start.setSeconds(0);
       start.setMilliseconds(0);
-      console.log(start);
 
       const end = new Date(start);
       end.setMinutes(end.getMinutes() + 30);
@@ -52,12 +49,6 @@ const Calendar = () => {
         title: med.name,
         start,
         end,
-        recurring: new RRule({
-          freq: RRule.DAILY,
-          interval: 1,
-          dtstart: new Date(),
-          count: 30,
-        }),
         color: med.taken ? "#A5D6A7" : "#90CAF9",
         editable: true,
         draggable: true,
@@ -84,12 +75,6 @@ const Calendar = () => {
         title: med.name,
         start,
         end,
-        recurring: new RRule({
-          freq: RRule.DAILY,
-          interval: 1,
-          dtstart: new Date(2025, 1, 11, 17, 0, 0, 0),
-          count: 30,
-        }),
         color: "#90CAF9",
         editable: true,
         draggable: true,
@@ -112,16 +97,14 @@ const Calendar = () => {
     return Math.max(earliestHour - 1, 0); // Show 1 hour before earliest event, but not before midnight
   };
 
-  console.log(events);
-
   return (
     <div
       style={{
         width: window.innerWidth < 768 ? "100%" : "80%",
-        paddingRight: window.innerWidth < 768 ? 0 : "16px",
         marginBottom: window.innerWidth < 768 ? "16px" : 0,
-        height: window.innerWidth < 768 ? "100%" : "calc(95vh - 128px)",
+        height: window.innerWidth < 768 ? "100%" : "calc(100vh - 128px)",
         overflow: "scroll",
+        overflowX: "hidden",
       }}
     >
       <Scheduler

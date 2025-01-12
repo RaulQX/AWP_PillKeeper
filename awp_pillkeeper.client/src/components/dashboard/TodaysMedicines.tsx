@@ -17,6 +17,7 @@ const TodaysMedicines = () => {
     { name: "Nurofen", time: new Date().setHours(12, 0), taken: false },
     { name: "Vitamin B12", time: new Date().setHours(22, 0), taken: false },
     { name: "Magnesium", time: new Date().setHours(20, 0), taken: false },
+    { name: "Vitamin C", time: new Date().setHours(22, 0), taken: false },
   ];
 
   const handleMedicineCheck = (index: number, checked: boolean) => {
@@ -31,41 +32,43 @@ const TodaysMedicines = () => {
   };
 
   return (
-    <Box sx={{ flex: "0 0 auto" }}>
+    <Box sx={{ flex: "0 0 auto", paddingLeft: "16px" }}>
       <Typography
-        variant="h6"
-        sx={{ fontSize: "0.9rem", fontWeight: "bold" }}
+        variant="h4"
+        sx={{ fontSize: "1.5rem", fontWeight: "bold" }}
         gutterBottom
         textAlign={"right"}
       >
         Today's Medicines
       </Typography>
-      <Grid container spacing={1}>
-        {todaysMeds.map((med, index) => (
-          <Grid item xs={12} sm={6} key={index}>
-            <ListItem disablePadding dense>
-              <Checkbox
-                checked={med.taken}
-                size="small"
-                onChange={(e) => handleMedicineCheck(index, e.target.checked)}
-              />
-              <ListItemText
-                primary={med.name}
-                secondary={new Date(med.time).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
-                sx={{
-                  textDecoration: med.taken ? "line-through" : "none",
-                  "& .MuiListItemText-primary": { fontSize: "0.8rem" },
-                  "& .MuiListItemText-secondary": { fontSize: "0.7rem" },
-                }}
-              />
-            </ListItem>
-          </Grid>
-        ))}
-      </Grid>
+      <Box sx={{ maxHeight: "180px", overflow: "auto", overflowX: "hidden" }}>
+        <Grid container spacing={1}>
+          {todaysMeds.map((med, index) => (
+            <Grid item xs={12} sm={6} key={index}>
+              <ListItem disablePadding dense>
+                <Checkbox
+                  checked={med.taken}
+                  size="small"
+                  onChange={(e) => handleMedicineCheck(index, e.target.checked)}
+                />
+                <ListItemText
+                  primary={med.name}
+                  secondary={new Date(med.time).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                  sx={{
+                    textDecoration: med.taken ? "line-through" : "none",
+                    "& .MuiListItemText-primary": { fontSize: "1rem" },
+                    "& .MuiListItemText-secondary": { fontSize: "0.8rem" },
+                  }}
+                />
+              </ListItem>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 };
