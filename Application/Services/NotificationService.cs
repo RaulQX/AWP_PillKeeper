@@ -58,7 +58,9 @@ namespace AWP_PillKeeper.Application.Services
                 UserId = notificationDto.UserId,
                 Title = notificationDto.Title,
                 Subtitle = notificationDto.Subtitle,
-                Date = notificationDto.Date
+                Date = notificationDto.Date,
+                Taken = notificationDto.Taken,
+                Color = notificationDto.Color
             };
 
             _context.Notifications.Add(notification);
@@ -66,6 +68,24 @@ namespace AWP_PillKeeper.Application.Services
 
             notificationDto.Id = notification.Id;
             return notificationDto;
+        }
+
+        public async Task<IEnumerable<NotificationDTO>> GetAllByUserEmailAsync(string email)
+        {
+            return await _context.Notifications
+                .Include(n => n.User)
+                .Where(n => n.User.Email == email)
+                .Select(n => new NotificationDTO
+                {
+                    Id = n.Id,
+                    UserId = n.UserId,
+                    Title = n.Title,
+                    Subtitle = n.Subtitle,
+                    Date = n.Date,
+                    Taken = n.Taken,
+                    Color = n.Color
+                })
+                .ToListAsync();
         }
     }
 } 

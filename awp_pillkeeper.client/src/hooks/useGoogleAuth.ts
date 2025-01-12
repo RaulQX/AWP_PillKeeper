@@ -2,6 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { GoogleCredentialResponse } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useUser } from "../contexts/UserContext";
+import { useNotificationStore } from "../stores/notificationStore";
+import { NotificationDto } from "../types/NotificationDto";
 
 interface GoogleUser {
   email: string;
@@ -18,10 +20,14 @@ interface UserResponse {
   id: number;
   email: string;
   name: string;
+  notifications: NotificationDto[];
 }
 
 export const useGoogleAuth = () => {
   const { setUser } = useUser();
+  const setNotifications = useNotificationStore(
+    (state) => state.setNotifications
+  );
 
   const registerUser = async (credential: string) => {
     console.log("Starting registerUser with credential");
@@ -90,6 +96,7 @@ export const useGoogleAuth = () => {
     },
     onSuccess: (data) => {
       console.log("Mutation success, setting user:", data);
+      setNotifications(data.notifications);
       setUser({
         name: data.name,
         email: data.email,

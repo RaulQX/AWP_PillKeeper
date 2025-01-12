@@ -6,102 +6,21 @@ import {
   EventActions,
   ProcessedEvent,
 } from "@aldabil/react-scheduler/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useNotificationStore } from "../../stores/notificationStore";
+import { notificationsToProcessedEvents } from "../../utils/notificationTransforms";
+import { getRandomColor } from "../../utils/colors";
+import { useNotifications } from "../../hooks/useNotifications";
 
 const Calendar = () => {
-  const events = useEventStore((state) => state.events);
-  const todaysMeds = [
-    { name: "Paracetamol", time: new Date().setHours(8, 0), taken: false },
-    { name: "Vitamin D", time: new Date().setHours(9, 0), taken: true },
-    { name: "Iron Supplement", time: new Date().setHours(10, 0), taken: false },
-    { name: "Nurofen", time: new Date().setHours(12, 0), taken: false },
-    { name: "Vitamin B12", time: new Date().setHours(22, 0), taken: false },
-    { name: "Magnesium", time: new Date().setHours(20, 0), taken: false },
-  ];
+  const { data: notifsQuery } = useNotifications();
+  const notifications = useNotificationStore((state) => state.notifications);
+  console.log("notifications =", notifications);
+  const processedEvents = notificationsToProcessedEvents(notifications);
+  console.log("processedEvents =", processedEvents);
 
-  const tomorrowsMeds = [
-    { name: "Paracetamol", time: new Date().setHours(8, 0), taken: false },
-    { name: "Vitamin D", time: new Date().setHours(9, 0), taken: false },
-    { name: "Iron Supplement", time: new Date().setHours(10, 0), taken: false },
-    { name: "Nurofen", time: new Date().setHours(12, 0), taken: false },
-    { name: "Vitamin B12", time: new Date().setHours(14, 0), taken: false },
-    { name: "Magnesium", time: new Date().setHours(20, 0), taken: false },
-  ];
-  useEffect(() => {
-    const addEvent = useEventStore.getState().addEvent;
-
-    // Clear existing events
-    useEventStore.getState().events.forEach((event) => {
-      useEventStore.getState().deleteEvent(event.event_id);
-    });
-
-    // Add events for today's medicines
-    todaysMeds.forEach((med, index) => {
-      const medTime = new Date(med.time);
-      const hours = medTime.getHours();
-      const minutes = medTime.getMinutes();
-
-      const start = new Date();
-      start.setHours(hours, minutes, 0);
-      start.setSeconds(0);
-      start.setMilliseconds(0);
-
-      const end = new Date(start);
-      end.setMinutes(end.getMinutes() + 30);
-
-      addEvent({
-        event_id: `today-${index}`,
-        title: med.name,
-        start,
-        end,
-        color: med.taken ? "#A5D6A7" : "#90CAF9",
-        editable: true,
-        draggable: true,
-      });
-    });
-
-    // Add events for tomorrow's medicines
-    tomorrowsMeds.forEach((med, index) => {
-      const medTime = new Date(med.time);
-      const hours = medTime.getHours();
-      const minutes = medTime.getMinutes();
-
-      const start = new Date();
-      start.setDate(start.getDate() + 1);
-      start.setHours(hours, minutes, 0);
-      start.setSeconds(0);
-      start.setMilliseconds(0);
-
-      const end = new Date(start);
-      end.setMinutes(end.getMinutes() + 30);
-
-      addEvent({
-        event_id: `tomorrow-${index}`,
-        title: med.name,
-        start,
-        end,
-        color: "#90CAF9",
-        editable: true,
-        draggable: true,
-      });
-    });
-  }, []);
-
-  const getEarliestEventHour = () => {
-    const today = new Date();
-    const todayEvents = events.filter((event) => {
-      const eventDate = new Date(event.start);
-      return eventDate.toDateString() === today.toDateString();
-    });
-    if (todayEvents.length === 0) return 12; // Default to 7 if no events
-
-    const earliestHour = Math.min(
-      ...todayEvents.map((event) => new Date(event.start).getHours())
-    );
-
-    return Math.max(earliestHour - 1, 0); // Show 1 hour before earliest event, but not before midnight
-  };
+  const queryClient = useQueryClient();
 
   const createEventMutation = useMutation({
     mutationFn: async (event: ProcessedEvent) => {
@@ -112,8 +31,11 @@ const Calendar = () => {
           id: 1,
           title: event.title,
           subtitle: event.subtitle || null,
-          date: event.start,
+          //add two hours to date
+          date: new Date(event.start.getTime() + 2 * 60 * 60 * 1000),
           userId: 1,
+          taken: false,
+          color: getRandomColor(),
         },
         {
           headers: {
@@ -134,6 +56,7 @@ const Calendar = () => {
       // ... existing edit logic
     } else if (action === "create") {
       await createEventMutation.mutateAsync(event);
+      await queryClient.invalidateQueries({ queryKey: ["notifications"] });
       return event;
     }
     return event;
@@ -151,11 +74,10 @@ const Calendar = () => {
     >
       <Scheduler
         view="day"
-        events={events}
+        events={processedEvents}
         editable={true}
         draggable={true}
         onEventEdit={(event: any) => {
-          console.log(events);
           useEventStore.getState().updateEvent(event);
         }}
         onConfirm={handleConfirm}
@@ -167,7 +89,7 @@ const Calendar = () => {
           step: 30,
         }}
         day={{
-          startHour: getEarliestEventHour() as DayHours,
+          startHour: 7 as DayHours,
           endHour: 23,
           step: 60,
         }}

@@ -1,9 +1,17 @@
 import { Box, Typography } from "@mui/material";
 import logo from "/logo.jpg";
 import { useUser } from "../../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const Menu = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <div
@@ -35,8 +43,9 @@ const Menu = () => {
           height: 48,
           borderRadius: "50%",
           objectFit: "cover",
+          cursor: "pointer",
         }}
-        referrerPolicy="no-referrer"
+        onClick={handleLogout}
       />
     </div>
   );

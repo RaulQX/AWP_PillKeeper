@@ -12,5 +12,6 @@ namespace AWP_PillKeeper.Application.Services
         Task UpdateAsync(Notification notification);
         Task DeleteAsync(int id);
         Task<NotificationDTO> CreateNotificationAsync(NotificationDTO notificationDto);
+        Task<IEnumerable<NotificationDTO>> GetAllByUserEmailAsync(string email);
     }
 } 

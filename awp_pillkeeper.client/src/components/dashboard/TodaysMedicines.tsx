@@ -6,30 +6,19 @@ import {
   ListItemText,
   Checkbox,
 } from "@mui/material";
-import { useEventStore } from "../../stores/eventStore";
+import { useNotificationStore } from "../../stores/notificationStore";
+import { NotificationDto } from "../../types/NotificationDto";
 
 const TodaysMedicines = () => {
-  const events = useEventStore((state) => state.events);
-  const todaysMeds = [
-    { name: "Paracetamol", time: new Date().setHours(8, 0), taken: false },
-    { name: "Vitamin D", time: new Date().setHours(9, 0), taken: true },
-    { name: "Iron Supplement", time: new Date().setHours(10, 0), taken: false },
-    { name: "Nurofen", time: new Date().setHours(12, 0), taken: false },
-    { name: "Vitamin B12", time: new Date().setHours(22, 0), taken: false },
-    { name: "Magnesium", time: new Date().setHours(20, 0), taken: false },
-    { name: "Vitamin C", time: new Date().setHours(22, 0), taken: false },
-  ];
+  const notifications = useNotificationStore(
+    (state: any) => state.notifications
+  );
 
-  const handleMedicineCheck = (index: number, checked: boolean) => {
-    const eventId = `today-${index}`;
-    const event = events.find((e) => e.event_id === eventId);
-    if (event) {
-      useEventStore.getState().updateEvent({
-        ...event,
-        color: checked ? "#A5D6A7" : "#90CAF9",
-      });
-    }
-  };
+  const todaysMeds = notifications.filter((notification: NotificationDto) => {
+    const notificationDate = new Date(notification.date);
+    const today = new Date();
+    return notificationDate.toDateString() === today.toDateString();
+  });
 
   return (
     <Box sx={{ flex: "0 0 auto", paddingLeft: "16px" }}>
@@ -43,30 +32,31 @@ const TodaysMedicines = () => {
       </Typography>
       <Box sx={{ maxHeight: "180px", overflow: "auto", overflowX: "hidden" }}>
         <Grid container spacing={1}>
-          {todaysMeds.map((med, index) => (
-            <Grid item xs={12} sm={6} key={index}>
-              <ListItem disablePadding dense>
-                <Checkbox
-                  checked={med.taken}
-                  size="small"
-                  onChange={(e) => handleMedicineCheck(index, e.target.checked)}
-                />
-                <ListItemText
-                  primary={med.name}
-                  secondary={new Date(med.time).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })}
-                  sx={{
-                    textDecoration: med.taken ? "line-through" : "none",
-                    "& .MuiListItemText-primary": { fontSize: "1rem" },
-                    "& .MuiListItemText-secondary": { fontSize: "0.8rem" },
-                  }}
-                />
-              </ListItem>
-            </Grid>
-          ))}
+          {todaysMeds
+            .sort(
+              (a: NotificationDto, b: NotificationDto) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            )
+            .map((med: NotificationDto) => (
+              <Grid item xs={12} sm={6} key={med.id}>
+                <ListItem disablePadding dense>
+                  <Checkbox checked={med.taken} size="small" />
+                  <ListItemText
+                    primary={med.title}
+                    secondary={new Date(med.date).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                    sx={{
+                      textDecoration: med.taken ? "line-through" : "none",
+                      "& .MuiListItemText-primary": { fontSize: "1rem" },
+                      "& .MuiListItemText-secondary": { fontSize: "0.8rem" },
+                    }}
+                  />
+                </ListItem>
+              </Grid>
+            ))}
         </Grid>
       </Box>
     </Box>

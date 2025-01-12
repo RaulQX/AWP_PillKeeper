@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { RRule } from "rrule";
 
 export type ProcessedEvent = {
   event_id: number | string;

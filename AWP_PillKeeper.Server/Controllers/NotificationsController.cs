@@ -18,10 +18,10 @@ namespace AWP_PillKeeper.Server.Controllers
             _notificationService = notificationService;
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<Notification>>> GetUserNotifications(int userId)
+        [HttpGet("user/{email}")]
+        public async Task<ActionResult<IEnumerable<NotificationDTO>>> GetUserNotifications(string email)
         {
-            var notifications = await _notificationService.GetAllByUserIdAsync(userId);
+            var notifications = await _notificationService.GetAllByUserEmailAsync(email);
             return Ok(notifications);
         }
 

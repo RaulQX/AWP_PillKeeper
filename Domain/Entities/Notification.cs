@@ -16,6 +16,8 @@ namespace Domain.Entities
         public string Title { get; set; } = string.Empty;
         public string? Subtitle { get; set; }
         public DateTime Date { get; set; }
+        public bool Taken { get; set; }
+        public string Color { get; set; } = string.Empty;
         
         public virtual User User { get; set; } = null!;
     }
