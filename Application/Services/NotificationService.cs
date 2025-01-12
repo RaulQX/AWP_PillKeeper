@@ -1,5 +1,6 @@
 using AWP_PillKeeper.Domain.Entities;
 using AWP_PillKeeper.Infrastructure.Data;
+using Domain.DTOs;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,23 @@ namespace AWP_PillKeeper.Application.Services
                 _context.Notifications.Remove(notification);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<NotificationDTO> CreateNotificationAsync(NotificationDTO notificationDto)
+        {
+            var notification = new Notification
+            {
+                UserId = notificationDto.UserId,
+                Title = notificationDto.Title,
+                Subtitle = notificationDto.Subtitle,
+                Date = notificationDto.Date
+            };
+
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+
+            notificationDto.Id = notification.Id;
+            return notificationDto;
         }
     }
 } 

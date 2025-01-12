@@ -1,4 +1,5 @@
 using AWP_PillKeeper.Domain.Entities;
+using Domain.DTOs;
 using Domain.Entities;
 
 namespace AWP_PillKeeper.Application.Services
@@ -10,5 +11,6 @@ namespace AWP_PillKeeper.Application.Services
         Task<Notification> CreateAsync(Notification notification);
         Task UpdateAsync(Notification notification);
         Task DeleteAsync(int id);
+        Task<NotificationDTO> CreateNotificationAsync(NotificationDTO notificationDto);
     }
 } 

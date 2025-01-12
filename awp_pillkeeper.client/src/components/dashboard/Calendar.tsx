@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { Scheduler } from "@aldabil/react-scheduler";
 import { useEventStore } from "../../stores/eventStore";
-import { DayHours } from "@aldabil/react-scheduler/types";
+import {
+  DayHours,
+  EventActions,
+  ProcessedEvent,
+} from "@aldabil/react-scheduler/types";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const Calendar = () => {
   const events = useEventStore((state) => state.events);
@@ -97,6 +103,42 @@ const Calendar = () => {
     return Math.max(earliestHour - 1, 0); // Show 1 hour before earliest event, but not before midnight
   };
 
+  const createEventMutation = useMutation({
+    mutationFn: async (event: ProcessedEvent) => {
+      console.log("event =", event);
+      const response = await axios.post(
+        "https://localhost:7001/api/Notifications",
+        {
+          id: 1,
+          title: event.title,
+          subtitle: event.subtitle || null,
+          date: event.start,
+          userId: 1,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+      return response.data;
+    },
+  });
+
+  const handleConfirm = async (
+    event: ProcessedEvent,
+    action: EventActions
+  ): Promise<ProcessedEvent> => {
+    if (action === "edit") {
+      // ... existing edit logic
+    } else if (action === "create") {
+      await createEventMutation.mutateAsync(event);
+      return event;
+    }
+    return event;
+  };
+
   return (
     <div
       style={{
@@ -116,6 +158,7 @@ const Calendar = () => {
           console.log(events);
           useEventStore.getState().updateEvent(event);
         }}
+        onConfirm={handleConfirm}
         week={{
           weekDays: [2, 3, 4, 5, 6, 0, 1],
           weekStartOn: 0,

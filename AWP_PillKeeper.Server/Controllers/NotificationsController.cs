@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using AWP_PillKeeper.Application.Services;
 using AWP_PillKeeper.Domain.Entities;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Domain.DTOs;
 
 namespace AWP_PillKeeper.Server.Controllers
 {
@@ -35,13 +37,10 @@ namespace AWP_PillKeeper.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Notification>> CreateNotification(Notification notification)
+        public async Task<ActionResult<NotificationDTO>> CreateNotification(NotificationDTO notificationDto)
         {
-            var created = await _notificationService.CreateAsync(notification);
-            return CreatedAtAction(
-                nameof(GetNotification),
-                new { id = created.Id },
-                created);
+            var result = await _notificationService.CreateNotificationAsync(notificationDto);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
