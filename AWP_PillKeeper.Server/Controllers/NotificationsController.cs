@@ -44,12 +44,22 @@ namespace AWP_PillKeeper.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateNotification(int id, Notification notification)
+        public async Task<IActionResult> UpdateNotification(int id, NotificationDTO notificationDto)
         {
-            if (id != notification.Id)
+            if (id != notificationDto.Id)
             {
                 return BadRequest();
             }
+
+            var notification = new Notification
+            {
+                Id = notificationDto.Id,
+                UserId = notificationDto.UserId,
+                Title = notificationDto.Title,
+                Subtitle = notificationDto.Subtitle,
+                Date = notificationDto.Date,
+                Taken = notificationDto.Taken
+            };
 
             await _notificationService.UpdateAsync(notification);
             return NoContent();

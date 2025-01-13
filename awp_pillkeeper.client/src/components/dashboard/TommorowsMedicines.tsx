@@ -1,13 +1,12 @@
 import { Box, Typography, Grid, ListItem, ListItemText } from "@mui/material";
-import { useNotificationStore } from "../../stores/notificationStore";
 import { NotificationDto } from "../../types/NotificationDto";
+import { useNotifications } from "../../hooks/useNotifications";
 
 const TommorowsMedicines = () => {
-  const notifications = useNotificationStore(
-    (state: any) => state.notifications
-  );
-  const tomorrowsMeds = notifications
-    .filter((notification: NotificationDto) => {
+  const { data: notifsQuery } = useNotifications();
+
+  const tomorrowsMeds = notifsQuery
+    ?.filter((notification: NotificationDto) => {
       const notificationDate = new Date(notification.date);
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
@@ -30,7 +29,7 @@ const TommorowsMedicines = () => {
       </Typography>
       <Box sx={{ maxHeight: "180px", overflow: "auto", overflowX: "hidden" }}>
         <Grid container spacing={1}>
-          {tomorrowsMeds.map((med: NotificationDto) => (
+          {tomorrowsMeds?.map((med: NotificationDto) => (
             <Grid item xs={12} sm={6} key={med.id}>
               <ListItem disablePadding dense>
                 <ListItemText

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Scheduler } from "@aldabil/react-scheduler";
 import { useEventStore } from "../../stores/eventStore";
 import {
@@ -15,9 +14,10 @@ import { useNotifications } from "../../hooks/useNotifications";
 
 const Calendar = () => {
   const { data: notifsQuery } = useNotifications();
-  const notifications = useNotificationStore((state) => state.notifications);
+  const notifications = useNotificationStore(() => notifsQuery);
+  console.log("notifsQuery =", notifsQuery);
   console.log("notifications =", notifications);
-  const processedEvents = notificationsToProcessedEvents(notifications);
+  const processedEvents = notificationsToProcessedEvents(notifications || []);
   console.log("processedEvents =", processedEvents);
 
   const queryClient = useQueryClient();
@@ -53,7 +53,6 @@ const Calendar = () => {
     action: EventActions
   ): Promise<ProcessedEvent> => {
     if (action === "edit") {
-      // ... existing edit logic
     } else if (action === "create") {
       await createEventMutation.mutateAsync(event);
       await queryClient.invalidateQueries({ queryKey: ["notifications"] });

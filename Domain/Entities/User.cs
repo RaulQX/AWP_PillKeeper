@@ -13,6 +13,7 @@ namespace AWP_PillKeeper.Domain.Entities
         public int Id { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Picture { get; set; } = string.Empty;
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

@@ -8,6 +8,7 @@ import { NotificationDto } from "../types/NotificationDto";
 interface GoogleUser {
   email: string;
   name: string;
+  picture: string;
 }
 
 interface DecodedCredential {
@@ -20,6 +21,7 @@ interface UserResponse {
   id: number;
   email: string;
   name: string;
+  picture: string;
   notifications: NotificationDto[];
 }
 
@@ -37,6 +39,7 @@ export const useGoogleAuth = () => {
     const user: GoogleUser = {
       email: decoded.email,
       name: decoded.name,
+      picture: decoded.picture,
     };
     console.log("Attempting to find user:", user);
 
@@ -71,7 +74,7 @@ export const useGoogleAuth = () => {
           console.error("Create user failed:", errorText);
           throw new Error(`Failed to create user: ${errorText}`);
         }
-        return await createResponse.json();
+        return { ...(await createResponse.json()), picture: user.picture };
       }
 
       if (!response.ok) {
@@ -79,7 +82,7 @@ export const useGoogleAuth = () => {
         throw new Error(`Failed to get user: ${errorText}`);
       }
 
-      return await response.json();
+      return { ...(await response.json()), picture: user.picture };
     } catch (error) {
       console.error("Error in registerUser:", error);
       throw error;
@@ -100,7 +103,7 @@ export const useGoogleAuth = () => {
       setUser({
         name: data.name,
         email: data.email,
-        image: "",
+        image: data.picture,
       });
     },
     onError: (error) => {
